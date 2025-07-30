@@ -52,7 +52,7 @@ if (googleLogin) {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://arehmandeveloper.github.io/login/'
+        redirectTo: 'https://arehmandeveloper.github.io/dashboard/'
 
       }
     });
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: 'https://arehmandeveloper.github.io/login/'
+          redirectTo: 'https://arehmandeveloper.github.io/dashboard/'
         }
       });
 
