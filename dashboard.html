@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 30px;
+      color: #00f0ff;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    }
+
+    #profilePic {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 20px;
+      border: 3px solid #00f0ff;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+      display: none;
+    }
+
+    #userInfo {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      color: #ffffff;
+      text-shadow: 0 0 5px rgba(255,255,255,0.2);
+    }
+
+    .logout-btn {
+      padding: 14px 28px;
+      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(255, 75, 43, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: linear-gradient(to right, #ff4b2b, #ff416c);
+      box-shadow: 0 0 25px rgba(255, 75, 43, 0.6);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    <h1>Welcome to Dashboard</h1>
+    <img id="profilePic" src="" alt="Profile Picture">
+    <p id="userInfo">Checking login status...</p>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://jzgqfkbmudjblitvevxc.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6Z3Fma2JtdWRqYmxpdHZldnhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM0NzMzMDAsImV4cCI6MjA2OTA0OTMwMH0.bUva-RMXg_rX_ecx54EJCm99G7ASlzVy5nxS92t16Ec'
+    );
+
+    async function checkUser() {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        setTimeout(async () => {
+          const { data: retryData } = await supabase.auth.getSession();
+          if (!retryData.session) {
+            window.location.href = 'index.html';
+          } else {
+            showUser(retryData.session.user);
+          }
+        }, 1500);
+      } else {
+        showUser(session.user);
+      }
+    }
+
+    function showUser(user) {
+      const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email;
+      document.getElementById('userInfo').textContent = `Logged in as: ${name}`;
+
+      const pic = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+      const img = document.getElementById('profilePic');
+
+      if (pic) {
+        img.src = pic;
+      } else {
+        img.src = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBtgFFcGDOgUQGTC748i388C4EhfNCkX7rfg&s';
+      }
+
+      img.style.display = 'inline-block';
+    }
+
+    checkUser();
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        showUser(session.user);
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    });
+  </script>
+
+</body>
+</html>
