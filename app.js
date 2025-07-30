@@ -52,7 +52,7 @@ if (googleLogin) {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'http://localhost:5500/dashboard.html'
+        redirectTo: 'https://jzgqfkbmudjblitvevxc.supabase.co/auth/v1/callback'
 
       }
     });
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: 'http://localhost:5500/dashboard.html'
+          redirectTo: 'https://jzgqfkbmudjblitvevxc.supabase.co/auth/v1/callback'
         }
       });
 
