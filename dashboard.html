@@ -121,11 +121,7 @@
         showUser(session.user);
       }
     });
-    supabase.auth.getSession().then(({ data: { session } }) => {
-  if (session) {
-    window.location.href = 'dashboard.html';
-  }
-});
+  
 
 
     document.getElementById('logoutBtn').addEventListener('click', async () => {
